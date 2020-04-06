@@ -1,10 +1,17 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using SportBet.Models;
 
 namespace SportBet
 {
@@ -32,6 +39,12 @@ namespace SportBet
             });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+
+            services.AddDbContext<OnlineBetContext05bc56b9c2dd44e99bb9affd514b6329Context>(options =>
+                    options.UseSqlServer(Configuration.GetConnectionString("OnlineBetContext05bc56b9c2dd44e99bb9affd514b6329Context")));
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

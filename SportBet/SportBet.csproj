@@ -29,6 +29,7 @@
     <None Remove="ClientApp\src\components\Counter.js" />
     <None Remove="ClientApp\src\components\FetchData.js" />
     <None Remove="ClientApp\src\components\FetchMatch.tsx" />
+    <None Remove="ClientApp\src\components\Row.jsx" />
   </ItemGroup>
 
   <ItemGroup>
