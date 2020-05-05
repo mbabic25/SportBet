@@ -56,10 +56,10 @@ namespace SportBet.Controllers
 
         //GET Sports
         [HttpGet("[action]")]
-        [Route("api/Match/GetSportList")]
-        public IEnumerable<Sport> Details()
+        [Route("api/Match/SportDetails")]
+        public IEnumerable<Sport> SportDetails()
         {
-            return objmatch.GetSports();
+            return objmatch.GetSport();
         }
     }
 }

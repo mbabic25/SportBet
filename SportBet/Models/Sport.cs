@@ -10,9 +10,10 @@ namespace SportBet.Models
             Match = new HashSet<Match>();
         }
 
-        public int ID { get; set; }
-        public string Name { get; set; }
+        public int SportID { get; set; }
+        public string SportName { get; set; }
 
         public virtual ICollection<Match> Match { get; set; }
+
     }
 }

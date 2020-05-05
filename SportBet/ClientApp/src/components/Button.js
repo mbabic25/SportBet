@@ -2,10 +2,6 @@
 import './custom.css';
 
 class Button extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { isButtonOn: false };
-    }
 
     render() {
         return (
@@ -15,9 +11,9 @@ class Button extends React.Component {
             >
                 {this.props.player}
             </button>
-                );
-            }
-        }
+         );
+    }
+}
         
         
 export default Button;

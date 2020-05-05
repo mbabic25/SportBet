@@ -19,8 +19,8 @@ namespace SportBet.Models
         public virtual DbSet<Sport> Sport { get; set; }
         public virtual DbSet<Ticket> Ticket { get; set; }
         public virtual DbSet<Wallet> Wallet { get; set; }
+        public virtual DbSet<TicketMatch> TicketMatch { get; set; }
 
-        // Unable to generate entity type for table 'dbo.TicketMatch'. Please see the warning messages.
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -39,7 +39,7 @@ namespace SportBet.Models
             {
                 entity.Property(e => e.id)
                     .HasColumnName("id")
-                    .ValueGeneratedNever();
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.name)
                     .IsRequired()
@@ -51,20 +51,20 @@ namespace SportBet.Models
 
                 entity.Property(e => e.x).HasColumnType("decimal(18, 2)");
 
-                entity.HasOne(d => d.sportNavigation)
+                entity.HasOne(d => d.Sport)
                     .WithMany(p => p.Match)
-                    .HasForeignKey(d => d.sport)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Match__Sport__2D27B809");
+                    .HasForeignKey(d => d.SportID)
+                    .OnDelete(DeleteBehavior.ClientSetNull)                    
+                    .HasConstraintName("FK__Match__Sport__2D27B809");                
             });
 
             modelBuilder.Entity<Sport>(entity =>
             {
-                entity.Property(e => e.ID)
-                    .HasColumnName("ID")
+                entity.Property(e => e.SportID)
+                    .HasColumnName("SportID")
                     .ValueGeneratedNever();
 
-                entity.Property(e => e.Name)
+                entity.Property(e => e.SportName)
                     .IsRequired()
                     .HasMaxLength(50)
                     .IsUnicode(false);
@@ -74,32 +74,63 @@ namespace SportBet.Models
             {
                 entity.Property(e => e.ID)
                     .HasColumnName("ID")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.Amount).HasDefaultValueSql("((5))");
+                    .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Cfc)
-                    .HasColumnName("CFC")
-                    .HasColumnType("decimal(18, 2)");
+                       .HasColumnName("CFC")
+                       .HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Amount)
+                      .HasColumnName("Amount");
+
+
 
                 entity.Property(e => e.Return).HasColumnType("decimal(18, 2)");
 
-                entity.Property(e => e.WalletId).HasColumnName("Wallet_ID");
+                entity.Property(e => e.WalletId).HasColumnName("Wallet_ID")
+                        .ValueGeneratedNever(); 
 
                 entity.HasOne(d => d.Wallet)
                     .WithMany(p => p.Ticket)
                     .HasForeignKey(d => d.WalletId)
                     .HasConstraintName("FK__Ticket__Wallet_I__35BCFE0A");
+
+                
             });
 
             modelBuilder.Entity<Wallet>(entity =>
             {
                 entity.Property(e => e.ID)
-                    .HasColumnName("ID")
-                    .ValueGeneratedNever();
+                      .HasColumnName("ID")
+                      .ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Amount).HasColumnType("decimal(18, 2)");
+                entity.Property(e => e.Date).HasColumnType("datetime");
             });
+
+            modelBuilder.Entity<TicketMatch>(entity =>
+            {
+                entity.HasKey(tm => new { tm.TicketID, tm.Matchid });
+                entity.Property(e => e.TicketID).HasColumnName("Ticket_ID")
+                      .ValueGeneratedNever();
+
+                entity.Property(e => e.Matchid).HasColumnName("Match_ID")
+                      .ValueGeneratedNever();
+
+                entity.HasOne(d => d.Ticket)
+                    .WithMany(p => p.TicketMatch)
+                    .HasForeignKey(d => d.TicketID)
+                    .HasConstraintName("FK__TicketMat__Ticke__151B244E");
+
+                entity.HasOne(d => d.Match)
+                    .WithMany(p => p.TicketMatch)
+                    .HasForeignKey(d => d.Matchid)
+                    .HasConstraintName("FK__TicketMat__Match__14270015");
+
+                entity.Property(e => e.Selected)
+                     .HasColumnName("Selected");
+            });
+
         }
     }
 }

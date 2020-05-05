@@ -77,11 +77,11 @@ namespace SportBet.Models
             }
         }
         //To Get the list of Sports    
-        public List<Sport> GetSports()
-        {
-            List<Sport> lstSport = new List<Sport>();
-            lstSport = (from SportList in db.Sport select SportList).ToList();
-            return lstSport;
-        }
+           public List<Sport> GetSport()
+           {
+               List<Sport> lstSport = db.Sport.ToList();
+               return lstSport;
+           }
+
     }
 }

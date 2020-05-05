@@ -14,7 +14,6 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var React = require("react");
-var react_router_dom_1 = require("react-router-dom");
 require("./custom.css");
 var Calculator_js_1 = require("./Calculator.js");
 var Row_js_1 = require("./Row.js");
@@ -22,10 +21,33 @@ var FetchMatch = /** @class */ (function (_super) {
     __extends(FetchMatch, _super);
     function FetchMatch(props) {
         var _this = _super.call(this, props) || this;
-        _this.handleClick = function (coef, prevCoef) {
-            _this.setState({ coeficSum: coef / prevCoef * _this.state.coeficSum });
+        _this.callbackFunction = function (childData) {
+            _this.setState({ sportLength: childData });
         };
-        _this.state = { matchList: [], loading: true, coeficSum: 1 };
+        _this.handleClick = function (coef, sportID, prevCoef, selectedMatchId, matchSelection) {
+            var i = _this.state.selectedMatches.indexOf(selectedMatchId, 0);
+            //inserting match id and match selection into the selectedMatches array every time the match is selected
+            if (i < 0) { //if there is no selected match with the selectdMatchId into the database 
+                var selectedMatchesNew = _this.state.selectedMatches.concat(selectedMatchId, matchSelection);
+                var newSelectedSport = _this.state.selectedSports.concat(sportID);
+                _this.setState({
+                    selectedMatches: selectedMatchesNew,
+                    selectedSports: newSelectedSport
+                });
+            }
+            else { //if there is already selected match with the selectdMatchId into the database,
+                //delete it from the array and write new selected match in the array
+                var filteredArray2 = _this.state.selectedMatches.slice(0, i).concat(_this.state.selectedMatches.slice(i + 2, _this.state.selectedMatches.length));
+                var selectedMatchesChange = filteredArray2.concat(selectedMatchId, matchSelection);
+                _this.setState({ selectedMatches: selectedMatchesChange });
+            }
+            _this.setState({
+                coeficSum: coef / prevCoef * _this.state.coeficSum
+            });
+        };
+        _this.state = {
+            matchList: [], loading: true, coeficSum: 1, selectedMatches: [], selectedSports: [], sportLength: null
+        };
         fetch('api/Match/Index')
             .then(function (response) { return response.json(); })
             .then(function (data) {
@@ -33,9 +55,6 @@ var FetchMatch = /** @class */ (function (_super) {
         });
         _this.handleClick = _this.handleClick.bind(_this);
         return _this;
-        // This binding is necessary to make "this" work in the callback  
-        /* this.handleDelete = this.handleDelete.bind(this);
-         this.handleEdit = this.handleEdit.bind(this);*/
     }
     FetchMatch.prototype.render = function () {
         var contents = this.state.loading
@@ -44,8 +63,6 @@ var FetchMatch = /** @class */ (function (_super) {
             : this.renderMatchTable(this.state.matchList);
         return React.createElement("div", null,
             React.createElement("h2", null, "Odaberi svoje parove!"),
-            React.createElement("p", null,
-                React.createElement(react_router_dom_1.Link, { to: "/addmatch" }, "Create New")),
             React.createElement("div", { className: "central" },
                 React.createElement("div", { className: "left" },
                     " ",
@@ -53,29 +70,9 @@ var FetchMatch = /** @class */ (function (_super) {
                     " "),
                 React.createElement("div", { className: "right" },
                     " ",
-                    React.createElement(Calculator_js_1.default, { coef: this.state.coeficSum }),
+                    React.createElement(Calculator_js_1.default, { coef: this.state.coeficSum, selectedMatches: this.state.selectedMatches, selectedSports: this.state.selectedSports, sportLength: this.state.sportLength }),
                     " ")));
     };
-    // Handle Delete request for a match 
-    /* private handleDelete(id: number) {
-         if (!window.confirm("Do you want to delete match with Id: " + id))
-             return;
-         else {
-             fetch('api/Match/Delete/' + id, {
-                 method: 'delete'
-             }).then(data => {
-                 this.setState(
-                     {
-                         matchList: this.state.matchList.filter((rec) => {
-                             return (rec.ID !== id);
-                         })
-                     });
-             });
-         }
-     }
-     private handleEdit(id: number) {
-         this.props.history.push("/match/edit/" + id);
-     }*/
     // Returns the HTML table to the render() method.  
     FetchMatch.prototype.renderMatchTable = function (matchList) {
         var _this = this;
@@ -84,13 +81,13 @@ var FetchMatch = /** @class */ (function (_super) {
                 React.createElement("tr", null,
                     React.createElement("th", null),
                     React.createElement("th", null, "Id"),
-                    React.createElement("th", null, "Name"),
+                    React.createElement("th", null, "Utakmica"),
                     React.createElement("th", null, "Sport"),
-                    React.createElement("th", null, "Player 1"),
-                    React.createElement("th", null, "Player 2"),
+                    React.createElement("th", null, "Igra\u010D 1"),
+                    React.createElement("th", null, "Igra\u010D 2"),
                     React.createElement("th", null, "X"))),
             React.createElement("tbody", null, matchList.map(function (match) {
-                return React.createElement(Row_js_1.default, { match: match, handleClick: _this.handleClick, key: match.id });
+                return React.createElement(Row_js_1.default, { match: match, handleClick: _this.handleClick, parentCallback: _this.callbackFunction, key: match.id });
             })));
     };
     return FetchMatch;
@@ -100,11 +97,11 @@ var MatchData = /** @class */ (function () {
     function MatchData() {
         this.id = 0;
         this.name = "";
-        this.sport = 0;
+        this.sportID = 0;
         this.player1 = 0;
         this.player2 = 0;
         this.x = 0;
-        this.sportNavigation = "";
+        this.sport = "";
     }
     return MatchData;
 }());
